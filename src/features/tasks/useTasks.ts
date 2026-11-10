@@ -1,5 +1,16 @@
 import { useCallback, useState } from 'react'
-import { addTask, removeTask, restoreTask, toggleTask, type Task } from './model'
+import {
+  addTask,
+  clearLocation,
+  moveTask,
+  removeTask,
+  restoreTask,
+  setLocation,
+  toggleTask,
+  type Location,
+  type Task,
+  type TaskStatus,
+} from './model'
 import { loadState, saveState } from '@/lib/storage'
 
 export function useTasks() {
@@ -18,17 +29,24 @@ export function useTasks() {
     [tasks, persist],
   )
 
-  const toggle = useCallback(
-    (id: string) => persist(toggleTask(tasks, id)),
-    [tasks, persist],
-  )
+  const toggle = useCallback((id: string) => persist(toggleTask(tasks, id)), [tasks, persist])
 
   const remove = useCallback((id: string) => persist(removeTask(tasks, id)), [tasks, persist])
 
-  const restore = useCallback(
-    (task: Task) => persist(restoreTask(tasks, task)),
+  const restore = useCallback((task: Task) => persist(restoreTask(tasks, task)), [tasks, persist])
+
+  const move = useCallback(
+    (id: string, toStatus: TaskStatus, toIndex: number) =>
+      persist(moveTask(tasks, id, toStatus, toIndex)),
     [tasks, persist],
   )
 
-  return { tasks, add, toggle, remove, restore }
+  const place = useCallback(
+    (id: string, location: Location) => persist(setLocation(tasks, id, location)),
+    [tasks, persist],
+  )
+
+  const unplace = useCallback((id: string) => persist(clearLocation(tasks, id)), [tasks, persist])
+
+  return { tasks, add, toggle, remove, restore, move, place, unplace }
 }

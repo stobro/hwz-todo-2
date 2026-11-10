@@ -50,3 +50,39 @@ Format je Task:
 - Dateien: src/components/ProgressRing.tsx, src/components/ProgressRing.test.tsx, src/features/tasks/components/EmptyState.tsx, src/App.tsx.
 - Test zuerst: Ring hat aria-label «1 von 2 erledigt»; leere Liste zeigt «Alles erledigt. Zeit für Kaffee.».
 - Fertig wenn: DESIGN.md Rezepte 1 und 5 erfüllt (SPEC «Fortschrittsring», «Leerer Zustand», «Hintergrund bewegt sich»), npm run check grün.
+
+[x] 7  Migration mit Test
+- Ziel: Aufgaben haben `status` statt `done` und optional `location`, alte Daten aus Version 1 werden ohne Verlust übernommen.
+- Dateien: src/lib/storage.ts, src/lib/storage.test.ts, src/features/tasks/model.ts, src/features/tasks/model.test.ts, src/features/tasks/useTasks.ts, src/features/tasks/useTasks.test.ts, src/features/tasks/components/TaskCard.tsx, src/features/tasks/components/TaskCard.test.tsx, src/App.tsx.
+- Test zuerst: loadState mit echten V1-Daten (`done: true` und `done: false`) liefert Version 2 mit `status: 'done'` und `status: 'todo'`, ohne `location`.
+- Fertig wenn: Abhaken setzt `done` bzw. `todo`, der Ring zählt weiter richtig (SPEC «Alte Daten bleiben», «Neu laden»), npm run check grün.
+
+[x] 8  Board mit drei Spalten und Drag and Drop
+- Ziel: Aufgaben erscheinen in «Offen», «In Arbeit», «Erledigt» und lassen sich per Maus und Tastatur verschieben; der Kopf heisst «Terra».
+- Dateien: src/features/tasks/model.ts, src/features/tasks/model.test.ts, src/features/tasks/useTasks.ts, src/features/tasks/components/Board.tsx, src/features/tasks/components/Board.test.tsx, src/features/tasks/components/TaskCard.tsx, src/App.tsx, src/App.test.tsx, index.html.
+- Test zuerst: `moveTask(tasks, id, 'doing', 0)` setzt Status und Reihenfolge; Board zeigt drei Spaltenüberschriften mit Zähler; h1 lautet «Terra».
+- Fertig wenn: DESIGN.md Rezept 6 erfüllt, Verschieben bleibt nach Neuladen, Konfetti bei «Erledigt» (SPEC «Name im Kopf», «Board mit drei Spalten», «Karte verschieben»), npm run check grün.
+
+[x] 9  Karte mit Pins
+- Ziel: Neben dem Board steht eine helle Karte, die jede Aufgabe mit Ort als Pin in ihrer Status-Farbe zeigt, ohne Spinner und mit Offline-Hinweis.
+- Dateien: docs/STACK.md, scripts/setup.mjs, package.json, package-lock.json, src/lib/map.ts, src/features/map/model.ts, src/features/map/model.test.ts, src/features/map/components/TaskMap.tsx, src/features/map/components/TaskMap.test.tsx, src/features/map/components/MapPin.tsx, src/App.tsx.
+- Test zuerst: `pinClass('done')` liefert `bg-accent`; `locationSummary(tasks)` liefert «3 von 5 mit Ort»; TaskMap zeigt bei Kartenfehler «Karte gerade nicht erreichbar».
+- Fertig wenn: Pins erscheinen, Pin-Farbe folgt dem Status ohne Neuladen, Ausschnitt zeigt alle Pins (SPEC «Board → Karte synchron», «Aufgaben ohne Ort», «Start ohne Ladegefühl», «Karte offline»), npm run check grün. Start nur nach ausdrücklichem Auftrag für docs/STACK.md und scripts/setup.mjs.
+
+[x] 10  Ort setzen und entfernen
+- Ziel: Über das Ort-Symbol einer Karte setzt man per Klick auf die Karte einen Ort oder entfernt ihn wieder.
+- Dateien: src/features/tasks/model.ts, src/features/tasks/model.test.ts, src/features/tasks/useTasks.ts, src/features/tasks/components/TaskCard.tsx, src/features/tasks/components/TaskCard.test.tsx, src/features/map/components/TaskMap.tsx, src/features/map/components/TaskMap.test.tsx, src/features/map/components/MapPin.tsx, src/App.tsx.
+- Test zuerst: `setLocation` und `clearLocation` ändern nur die eine Aufgabe; Klick auf «Ort setzen» zeigt den Hinweis zum Setzen, Esc beendet ihn.
+- Fertig wenn: Pin federt herein und gleitet beim Entfernen hinaus, Ort bleibt nach Neuladen (SPEC «Ort setzen», «Ort entfernen»), npm run check grün.
+
+[x] 11  Board und Karte verbinden
+- Ziel: Ein Klick auf einen Pin hebt die Karte im Board hervor, und Hover oder Fokus auf einer Karte hebt ihren Pin hervor.
+- Dateien: src/features/tasks/components/Board.tsx, src/features/tasks/components/TaskCard.tsx, src/features/tasks/components/TaskCard.test.tsx, src/features/map/components/TaskMap.tsx, src/features/map/components/TaskMap.test.tsx, src/features/map/components/MapPin.tsx, src/App.tsx.
+- Test zuerst: Klick auf einen Pin gibt der passenden TaskCard die Klasse `glow` und ruft `scrollIntoView` auf; Fokus auf einer TaskCard markiert ihren Pin als hervorgehoben.
+- Fertig wenn: Popup zeigt den Titel, Pin wird beim Hover grösser und wieder normal (SPEC «Karte → Board synchron», «Hover verbindet»), npm run check grün.
+
+[x] 12  Umschalter und schmales Fenster
+- Ziel: Ab 1024 px stehen Board und Karte nebeneinander, darunter wechselt «Board | Karte» die Ansicht in voller Breite.
+- Dateien: src/components/ViewSwitch.tsx, src/components/ViewSwitch.test.tsx, src/features/tasks/components/Board.tsx, src/App.tsx, src/App.test.tsx.
+- Test zuerst: Klick auf «Karte» setzt `aria-pressed` und zeigt die Kartenfläche statt des Boards.
+- Fertig wenn: Bei 360 px kein seitliches Scrollen der Seite, Spalten wischbar, 200-Zeichen-Titel bricht um (SPEC «Schmales Fenster mit Umschalter», «Schmales Fenster», «200 Zeichen»), npm run check grün.
